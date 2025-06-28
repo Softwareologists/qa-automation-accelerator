@@ -98,7 +98,7 @@ Use this guide to generate code, open pull requests, and interact with the repos
 ## 6. Agent Configuration
 
 - **Environment**:
-  - JDK 17+, Gradle 7+, Kotlin 1.8.
+  - JDK 21+, Gradle 7+, Kotlin 2.2.
   - Access to GitHub repository with write permissions.
 - **Tools**:
   - OpenAI or equivalent LLM with code-generation capabilities.

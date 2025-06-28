@@ -31,9 +31,9 @@ Please read our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing. We
    cd qa-helper
    ```
 2. Install prerequisites:
-   - JDK 17+
+   - JDK 21+
    - Gradle 7+
-   - Kotlin 1.8 (via Gradle toolchain)
+   - Kotlin 2.2 (via Gradle toolchain)
 3. Open the project in your IDE (IntelliJ IDEA recommended) or VS Code with the provided devcontainer.
 
 ---

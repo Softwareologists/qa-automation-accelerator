@@ -19,7 +19,7 @@ This plan breaks the QA Helper project into discrete, ordered tasks. Each task c
 2. **Configure Gradle Build**  
    - Add `settings.gradle.kts` including subprojects: `core`, `plugins/http-emulator`, `plugins/fileio-emulator`, `app`.  
    - Create root `build.gradle.kts` with version catalog and common dependencies (Kotlin, Jackson).  
-   - Define Kotlin and Java toolchain versions (Kotlin 1.8, JVM 17).
+   - Define Kotlin and Java toolchain versions (Kotlin 2.2, JVM 21).
 
 3. **Module Skeletons**  
    - Create empty Gradle modules: `core`, `plugins/http-emulator`, `plugins/fileio-emulator`, `app`.  

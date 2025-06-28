@@ -18,9 +18,9 @@
 
 ### Prerequisites
 
-- **Java 17+**
+- **Java 21+**
 - **Gradle 7.5+** (wrapper included)
-- **Kotlin 1.8+** (via Gradle toolchain)
+- **Kotlin 2.2+** (via Gradle toolchain)
 - **Windows 10/11, macOS 11+, or Linux**
 
 ### Installation
