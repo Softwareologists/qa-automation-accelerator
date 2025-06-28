@@ -5,6 +5,9 @@
 
 # Gradle wrapper
 /gradle/
+/gradle/wrapper/
+!/gradle
+!/gradle/libs.versions.toml
 /gradlew
 /gradlew.bat
 
