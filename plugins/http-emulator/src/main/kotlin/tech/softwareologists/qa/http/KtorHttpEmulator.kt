@@ -5,7 +5,9 @@ import io.ktor.server.application.call
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.request.httpMethod
 import io.ktor.server.request.receiveText
+import io.ktor.server.request.uri
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
@@ -29,7 +31,7 @@ class KtorHttpEmulator(private val stubs: List<HttpInteraction> = emptyList()) :
                     handle {
                         val method = call.request.httpMethod.value
                         val path = call.request.uri
-                        val headers = call.request.headers.toMap().mapValues { it.value.joinToString() }
+                        val headers = call.request.headers.entries().associate { it.key to it.value.joinToString() }
                         val body = call.receiveText().ifEmpty { null }
                         recorded += HttpInteraction(method, path, headers, body)
 
