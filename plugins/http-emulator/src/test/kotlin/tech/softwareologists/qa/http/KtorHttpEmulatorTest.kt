@@ -1,7 +1,7 @@
 package tech.softwareologists.qa.http
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.bodyAsText
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import kotlin.test.AfterTest
