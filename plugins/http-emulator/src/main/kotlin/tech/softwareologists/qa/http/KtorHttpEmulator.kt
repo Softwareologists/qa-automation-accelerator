@@ -42,7 +42,7 @@ class KtorHttpEmulator(private val stubs: List<HttpInteraction> = emptyList()) :
                 }
             }
         }.start(wait = false)
-        val port = server!!.environment.connectors.first().port
+        val port = kotlinx.coroutines.runBlocking { server!!.resolvedConnectors().first().port }
         baseUrl = "http://localhost:$port"
         return baseUrl
     }
