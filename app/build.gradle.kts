@@ -11,6 +11,7 @@ dependencies {
     implementation(compose.material3)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.compose.ui.test.junit4)
 }
 
 application {

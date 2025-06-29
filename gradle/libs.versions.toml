@@ -24,3 +24,4 @@ ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio-jvm", version.ref
 h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
 mssql = { group = "com.microsoft.sqlserver", name = "mssql-jdbc", version.ref = "mssql" }
 clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt" }
+compose-ui-test-junit4 = { group = "org.jetbrains.compose.ui", name = "ui-test-junit4-desktop", version.ref = "compose" }
