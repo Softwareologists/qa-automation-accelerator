@@ -26,7 +26,7 @@ fun MainScreen() {
     }
 
     fun startRecording() {
-        RecordCommand().main(emptyArray())
+        RecordCommand().main(arrayOf(jarPath))
         isRecording = true
     }
 
