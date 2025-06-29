@@ -4,9 +4,13 @@ ktor = "2.3.2"
 h2 = "2.2.224"
 mssql = "12.10.0.jre11"
 clikt = "4.2.2"
+ktlint-gradle = "11.6.0"
+detekt = "1.23.1"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [libraries]
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
