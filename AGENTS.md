@@ -53,8 +53,8 @@ Use this guide to generate code, open pull requests, and interact with the repos
      - Testing instructions.
 5. **Validation**:
    - Confirm branch builds (`./gradlew build`).
-   - Run tests (`./gradlew test`).
-   - Ensure no lint errors (if applicable).
+   - Always run tests (`./gradlew test`) and lint checks (`./gradlew ktlintCheck` or `./gradlew lint`) before opening a pull request.
+   - Ensure no lint errors.
 6. **Review**:
    - Agents should auto-assign reviewers if configured.
    - Tag `@maintainers` for final approval.
@@ -73,6 +73,7 @@ Use this guide to generate code, open pull requests, and interact with the repos
   - Use JUnit 5 with Kotlin Test (`kotlin.test`).
   - Mocks can use MockK or Mockito-Kotlin.
   - Name tests `XxxTest.kt`.
+  - Write unit tests for every feature, covering basic functionality and common edge cases.
 - **Dependencies**:
   - Prefer stable versions listed in `libs.versions.toml`.
   - Do not introduce new repositories without approval.
