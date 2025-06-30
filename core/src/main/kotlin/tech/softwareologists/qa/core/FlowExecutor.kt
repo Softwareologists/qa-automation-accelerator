@@ -32,8 +32,36 @@ class FlowExecutor(
         FlowIO.write(flow, output)
     }
 
-    /** Starts emulators with recorded data and replays the flow. */
-    fun playback(config: LaunchConfig) {
-        // stub
+    /**
+     * Starts emulators with recorded data and replays the given [flow]. The
+     * System Under Test (SUT) is launched via [launcher] and its HTTP
+     * interactions are compared against those recorded in the flow. A mismatch
+     * will throw an [IllegalStateException].
+     */
+    fun playback(flow: Flow, config: LaunchConfig) {
+        val baseUrl = httpEmulator.start()
+        fileIoEmulator.watch(listOf(config.workingDir ?: config.executable.parent))
+
+        // Pass emulator base URL to the SUT
+        val updatedConfig = config.copy(
+            environment = config.environment + ("HTTP_BASE_URL" to baseUrl)
+        )
+
+        // Replay file system events while watchers are active
+        simulateFileEvents(flow.emulator.file.events)
+
+        val process = launcher.launch(updatedConfig)
+        process.waitFor()
+
+        fileIoEmulator.stop()
+        httpEmulator.stop()
+
+        val expected = flow.emulator.http.interactions.toStubMappings()
+        val actual = httpEmulator.interactions().toStubMappings()
+        if (actual != expected) {
+            throw IllegalStateException(
+                "HTTP interactions mismatch. Expected $expected, got $actual"
+            )
+        }
     }
 }
