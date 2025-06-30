@@ -23,53 +23,14 @@
 - **Kotlin 2.2+** (via Gradle toolchain)
 - **Windows 10/11, macOS 11+, or Linux**
 
-### Installation
+See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed installation instructions.
 
-```bash
-git clone git@github.com:your-org/qa-automation-accelerator.git
-cd qa-automation-accelerator
-./gradlew clean assemble
-```
+### GUI Launcher
+See [docs/UI_WALKTHROUGH.md](docs/UI_WALKTHROUGH.md) for a walkthrough of the desktop UI.
 
-### Running the GUI Launcher
+### CLI Quickstart
 
-1. Build the application:
-   ```bash
-   ./gradlew :app:installDist
-   ```
-2. Launch:
-   - **macOS/Linux**: `app/build/install/app/bin/app`
-   - **Windows**: `app\build\install\app\bin\app.bat`
-
-### Using the CLI
-
-Record a new flow:
-
-```bash
-./gradlew run --args="record --output examples/sample-flow.yaml"
-```
-
-Replay a flow:
-
-```bash
-./gradlew run --args="replay --flow examples/sample-flow.yaml --reportDir reports/"
-```
-
-The report directory will contain `junit.xml` and `summary.html` alongside JSON
-evidence files.
-
-Create a branch from an existing flow:
-
-```bash
-./gradlew run --args="branch create --base examples/sample-flow.yaml --at 1 --name variant"
-```
-
-List available commands:
-
-```bash
-./gradlew run --args="--help"
-```
-
+See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for detailed command examples.
 ## Examples
 
 Sample workflows and reports are available under the `examples/` directory:
@@ -88,8 +49,7 @@ Sample workflows and reports are available under the `examples/` directory:
 - **ADR Templates:** `ADRs/decisions/`
 
 ## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting issues, branching, and submitting pull requests.
+See [docs/CONTRIBUTING_OVERVIEW.md](docs/CONTRIBUTING_OVERVIEW.md) for an overview of the contribution process.
 
 ## License
 
