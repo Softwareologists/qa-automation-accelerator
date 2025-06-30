@@ -6,6 +6,7 @@ package tech.softwareologists.qa.core
 data class Flow(
     val version: String,
     val appVersion: String,
+    val variables: Map<String, String> = emptyMap(),
     val emulator: EmulatorData,
     val steps: List<FlowStep>
 )

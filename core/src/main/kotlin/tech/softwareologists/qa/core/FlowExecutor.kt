@@ -40,17 +40,20 @@ class FlowExecutor(
      * interactions are compared against those recorded in the flow. A mismatch
      * will throw an [IllegalStateException].
      */
-    fun playback(flow: Flow, config: LaunchConfig) {
+    fun playback(flow: Flow, config: LaunchConfig, variables: Map<String, String> = emptyMap()) {
+        val resolvedFlow = flow.applyVariables(variables)
+        val resolvedConfig = config.applyVariables(resolvedFlow.variables + variables)
+
         val baseUrl = httpEmulator.start()
-        fileIoEmulator.watch(listOf(config.workingDir ?: config.executable.parent))
+        fileIoEmulator.watch(listOf(resolvedConfig.workingDir ?: resolvedConfig.executable.parent))
 
         // Pass emulator base URL to the SUT
-        val updatedConfig = config.copy(
-            environment = config.environment + ("HTTP_BASE_URL" to baseUrl)
+        val updatedConfig = resolvedConfig.copy(
+            environment = resolvedConfig.environment + ("HTTP_BASE_URL" to baseUrl)
         )
 
         // Replay file system events while watchers are active
-        simulateFileEvents(flow.emulator.file.events)
+        simulateFileEvents(resolvedFlow.emulator.file.events)
 
         val process = launcher.launch(updatedConfig)
         process.waitFor()
@@ -58,7 +61,7 @@ class FlowExecutor(
         fileIoEmulator.stop()
         httpEmulator.stop()
 
-        val expected = flow.emulator.http.interactions.toStubMappings()
+        val expected = resolvedFlow.emulator.http.interactions.toStubMappings()
         val actual = httpEmulator.interactions().toStubMappings()
         if (actual != expected) {
             throw IllegalStateException(

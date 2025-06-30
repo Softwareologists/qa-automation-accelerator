@@ -17,6 +17,11 @@ properties:
   appVersion:
     type: string
     description: Version of the application under test.
+  variables:
+    type: object
+    description: User-defined variables for parameterization.
+    additionalProperties:
+      type: string
   emulator:
     type: object
     description: Recorded emulator data.

@@ -18,6 +18,7 @@ class FlowIOTest {
         val flow = Flow(
             version = "1",
             appVersion = "test",
+            variables = mapOf("user" to "alice"),
             emulator = EmulatorData(
                 http = HttpData(listOf(interaction)),
                 file = FileData(listOf(event))
