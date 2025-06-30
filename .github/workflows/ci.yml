@@ -20,5 +20,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - name: Run tests
-        run: gradle test
+      - name: Build modules
+        run: gradle build
+      - name: Run sample flow
+        run: gradle run --args="replay --flow examples/sample-workflow.yaml --reportDir reports"
+      - name: Publish reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-reports
+          path: reports
