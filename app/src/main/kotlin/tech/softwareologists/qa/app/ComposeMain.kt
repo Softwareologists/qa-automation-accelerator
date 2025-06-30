@@ -1,7 +1,10 @@
 package tech.softwareologists.qa.app
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -11,12 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import tech.softwareologists.qa.core.Flow
+import tech.softwareologists.qa.core.FlowIO
+import tech.softwareologists.qa.app.BranchCreateCommand
 import javax.swing.JFileChooser
 
 @Composable
 fun MainScreen() {
     var jarPath by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
+    var flowPath by remember { mutableStateOf("") }
+    var flow by remember { mutableStateOf<Flow?>(null) }
 
     fun chooseFile() {
         val chooser = JFileChooser()
@@ -35,6 +43,26 @@ fun MainScreen() {
         isRecording = false
     }
 
+    fun chooseFlow() {
+        val chooser = JFileChooser()
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            flowPath = chooser.selectedFile.absolutePath
+            flow = FlowIO.read(java.nio.file.Path.of(flowPath))
+        }
+    }
+
+    fun branch(step: tech.softwareologists.qa.core.FlowStep) {
+        if (flowPath.isNotBlank()) {
+            BranchCreateCommand().main(
+                arrayOf(
+                    "--base", flowPath,
+                    "--at", step.id,
+                    "--name", step.id + "-branch"
+                )
+            )
+        }
+    }
+
     MaterialTheme {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -48,8 +76,42 @@ fun MainScreen() {
                 Button(onClick = { chooseFile() }) { Text("Browse") }
             }
 
+            Spacer(Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextField(
+                    value = flowPath,
+                    onValueChange = { flowPath = it },
+                    label = { Text("Flow YAML") },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = { chooseFlow() }) { Text("Browse") }
+            }
+
             Spacer(Modifier.height(16.dp))
-            Text("Configuration panels go here", modifier = Modifier.weight(1f))
+            flow?.let { f ->
+                var menuStep by remember { mutableStateOf<tech.softwareologists.qa.core.FlowStep?>(null) }
+                Column(modifier = Modifier.weight(1f)) {
+                    f.steps.forEach { step ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { menuStep = step }
+                                .padding(4.dp)
+                        ) {
+                            Text(step.description, modifier = Modifier.weight(1f))
+                        }
+                    }
+                    DropdownMenu(expanded = menuStep != null, onDismissRequest = { menuStep = null }) {
+                        DropdownMenuItem(text = { Text("Create Branch") }, onClick = {
+                            menuStep?.let { branch(it) }
+                            menuStep = null
+                        })
+                    }
+                }
+            } ?: Text("Configuration panels go here", modifier = Modifier.weight(1f))
 
             Row {
                 Button(onClick = { startRecording() }, enabled = !isRecording) {
