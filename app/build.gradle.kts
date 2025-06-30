@@ -8,6 +8,8 @@ dependencies {
     implementation(libs.clikt)
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.compose.ui.test.junit4)
@@ -23,6 +25,13 @@ compose.desktop {
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
             )
+        }
+        buildTypes {
+            release {
+                proguard {
+                    configurationFiles.from(project.file("proguard-rules.pro"))
+                }
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ kotlin-compose = "2.2.0"
 jackson = "2.17.0"
 spring-boot = "3.5.3"
 springdoc = "2.3.0"
+kotlinx-coroutines = "1.8.0"
+kotlinx-datetime = "0.6.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -37,3 +39,5 @@ spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spri
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot" }
 springdoc-openapi-webflux-ui = { group = "org.springdoc", name = "springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
 json-schema-validator = { group = "com.networknt", name = "json-schema-validator", version = "1.5.6" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
