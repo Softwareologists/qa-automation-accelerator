@@ -58,7 +58,7 @@ To suggest new features or improvements:
 ---
 
 ## Development Workflow
-We follow the [Implementation Plan & Guidelines](/docs/QA%20Helper%20Implementation%20Plan%20&%20Guidelines.md) to break work into discrete tasks.
+We follow the [Implementation Plan & Guidelines](/docs/IMPLEMENTATION_PLAN.md) to break work into discrete tasks.
 
 ### Branching Strategy
 - Create a topic branch off `main` for each task:  
@@ -126,7 +126,7 @@ We follow the [Implementation Plan & Guidelines](/docs/QA%20Helper%20Implementat
 ---
 
 ## Release Process
-See [RELEASE.md](docs/RELEASE.md) for the full release checklist, including versioning, changelog updates, and publishing artifacts.
+See [RELEASE.md](RELEASE.md) for the full release checklist, including versioning, changelog updates, and publishing artifacts.
 
 ---
 

@@ -55,7 +55,7 @@ Sample workflows and reports are available under the `examples/` directory:
 - **ADR Templates:** `ADRs/decisions/`
 
 ## Contributing
-See [docs/CONTRIBUTING_OVERVIEW.md](docs/CONTRIBUTING_OVERVIEW.md) for an overview of the contribution process.
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for an overview of the contribution process.
 
 ## License
 
