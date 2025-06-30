@@ -40,7 +40,12 @@ class FlowExecutor(
      * interactions are compared against those recorded in the flow. A mismatch
      * will throw an [IllegalStateException].
      */
-    fun playback(flow: Flow, config: LaunchConfig, variables: Map<String, String> = emptyMap()) {
+    fun playback(
+        flow: Flow,
+        config: LaunchConfig,
+        variables: Map<String, String> = emptyMap(),
+        stepAction: (FlowStep) -> Map<String, Any?> = { emptyMap() },
+    ) {
         val resolvedFlow = flow.applyVariables(variables)
         val resolvedConfig = config.applyVariables(resolvedFlow.variables + variables)
 
@@ -68,6 +73,8 @@ class FlowExecutor(
                 "HTTP interactions mismatch. Expected $expected, got $actual"
             )
         }
+
+        StepExecutor(stepAction).run(resolvedFlow.steps)
     }
 
     /**

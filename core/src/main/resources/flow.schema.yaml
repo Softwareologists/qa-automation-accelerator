@@ -71,13 +71,55 @@ properties:
       - http
       - file
   steps:
+    $ref: '#/definitions/stepList'
+
+definitions:
+  condition:
+    type: object
+    description: Condition evaluated against a previous step's result.
+    required: [stepId, path, equals]
+    properties:
+      stepId:
+        type: string
+        description: Identifier of the step to inspect.
+      path:
+        type: string
+        description: JSON path expression for the value to compare.
+      equals:
+        type: string
+        description: Expected value for the condition to be true.
+
+  loop:
+    type: object
+    description: Repeats a list of steps until a condition or count is met.
+    required: [steps]
+    properties:
+      steps:
+        $ref: '#/definitions/stepList'
+      until:
+        $ref: '#/definitions/condition'
+      count:
+        type: integer
+        minimum: 1
+
+  step:
+    type: object
+    required: [id, description]
+    properties:
+      id:
+        type: string
+      description:
+        type: string
+      if:
+        $ref: '#/definitions/condition'
+      then:
+        $ref: '#/definitions/stepList'
+      else:
+        $ref: '#/definitions/stepList'
+      loop:
+        $ref: '#/definitions/loop'
+
+  stepList:
     type: array
-    description: Ordered steps performed during the flow.
     items:
-      type: object
-      required: [id, description]
-      properties:
-        id:
-          type: string
-        description:
-          type: string
+      $ref: '#/definitions/step'
