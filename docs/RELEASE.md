@@ -18,6 +18,6 @@ If the tag contains a suffix such as `-rc1` it will be marked as a pre-release.
 3. Pushing the tag triggers the `release.yml` workflow which:
    - Builds all modules and runs tests and lint checks.
    - Creates application and agent binaries.
-   - Uploads the artifacts as release assets.
+   - Generates release notes and uploads the artifacts as release assets.
 4. Verify the GitHub release page for the uploaded binaries.
 
