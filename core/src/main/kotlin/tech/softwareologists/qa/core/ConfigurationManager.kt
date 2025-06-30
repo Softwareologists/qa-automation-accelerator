@@ -3,6 +3,7 @@ package tech.softwareologists.qa.core
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.core.type.TypeReference
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Properties
@@ -48,7 +49,10 @@ object ConfigurationManager {
             props.entries.associate { it.key.toString() to it.value.toString() }
         } else {
             val root: Map<String, Any?> =
-                yamlMapper.readValue(file.toFile(), Map::class.java) as Map<String, Any?>
+                yamlMapper.readValue(
+                    file.toFile(),
+                    object : TypeReference<Map<String, Any?>>() {}
+                )
             val result = mutableMapOf<String, String>()
             flattenYaml(null, root, result)
             result

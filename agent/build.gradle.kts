@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
@@ -21,10 +20,3 @@ dependencies {
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_21
-
-// temporary workaround for ktlint incompatibility with Kotlin 2.2
-afterEvaluate {
-    tasks.matching { it.name.startsWith("ktlint") }.configureEach {
-        enabled = false
-    }
-}
