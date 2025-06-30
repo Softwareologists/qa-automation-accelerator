@@ -16,11 +16,12 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import tech.softwareologists.qa.core.Flow
 import tech.softwareologists.qa.core.FlowIO
+import tech.softwareologists.qa.core.FlowValidator
 import tech.softwareologists.qa.app.BranchCreateCommand
 import javax.swing.JFileChooser
 
 @Composable
-fun MainScreen() {
+fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
     var jarPath by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
     var flowPath by remember { mutableStateOf("") }
@@ -34,12 +35,22 @@ fun MainScreen() {
     }
 
     fun startRecording() {
-        RecordCommand().main(arrayOf(jarPath))
+        recorder.start(jarPath)
         isRecording = true
     }
 
     fun stopRecording() {
-        // Placeholder for stop logic
+        val target = if (flowPath.isNotBlank()) {
+            java.nio.file.Path.of(flowPath)
+        } else {
+            java.nio.file.Path.of("flow.yaml")
+        }
+        recorder.stop(target)
+        if (java.nio.file.Files.exists(target)) {
+            val loaded = FlowIO.read(target)
+            FlowValidator.validate(loaded)
+            flow = loaded
+        }
         isRecording = false
     }
 
@@ -47,7 +58,9 @@ fun MainScreen() {
         val chooser = JFileChooser()
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             flowPath = chooser.selectedFile.absolutePath
-            flow = FlowIO.read(java.nio.file.Path.of(flowPath))
+            val loaded = FlowIO.read(java.nio.file.Path.of(flowPath))
+            FlowValidator.validate(loaded)
+            flow = loaded
         }
     }
 
