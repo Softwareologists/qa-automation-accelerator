@@ -51,7 +51,10 @@ class EvidenceCollectionTest {
         val flow = Flow(
             version = "1",
             appVersion = "test",
-            emulator = EmulatorData(HttpData(), FileData()),
+            emulator = EmulatorData(
+                http = HttpData(listOf(HttpInteraction("GET", "/hello"))),
+                file = FileData(),
+            ),
             steps = emptyList()
         )
         val dir = createTempDirectory()
