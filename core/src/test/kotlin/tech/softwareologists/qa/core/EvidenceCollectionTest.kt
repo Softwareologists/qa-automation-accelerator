@@ -58,14 +58,27 @@ class EvidenceCollectionTest {
             steps = emptyList()
         )
         val dir = createTempDirectory()
-        executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true"), workingDir = dir))
+        executor.playback(
+            flow,
+            LaunchConfig(java.nio.file.Paths.get("/usr/bin/true"), workingDir = dir)
+        )
         executor.collectEvidence("sample", dir, success = true)
         val tsDir = Files.list(dir.resolve("sample")).findFirst().get()
         assertTrue(Files.exists(tsDir.resolve("http_interactions.json")))
         assertTrue(Files.exists(tsDir.resolve("file_events.json")))
         assertTrue(Files.exists(tsDir.resolve("db_dump.sql")))
-        assertTrue(Files.exists(tsDir.resolve("junit.xml")))
-        assertTrue(Files.exists(tsDir.resolve("summary.html")))
+        val junit = tsDir.resolve("junit.xml")
+        assertTrue(Files.exists(junit))
+        val suite = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+            .newDocumentBuilder()
+            .parse(junit.toFile())
+            .documentElement
+        assertTrue(suite.nodeName == "testsuite")
+
+        val html = tsDir.resolve("summary.html")
+        assertTrue(Files.exists(html))
+        val content = Files.readString(html)
+        assertTrue("Status: <strong>Passed</strong>" in content)
         dir.toFile().deleteRecursively()
     }
 }
