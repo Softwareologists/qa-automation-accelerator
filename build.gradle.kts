@@ -16,8 +16,8 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     if (name != "agent") {
         apply(plugin = "org.jlleitschuh.gradle.ktlint")
+        apply(plugin = "io.gitlab.arturbosch.detekt")
     }
-    apply(plugin = "io.gitlab.arturbosch.detekt")
 
     extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
         jvmToolchain(21)
@@ -43,6 +43,6 @@ tasks.register("lint") {}
 gradle.projectsEvaluated {
     tasks.named("lint") {
         dependsOn(subprojects.filter { it.name != "agent" }.map { it.tasks.named("ktlintCheck") })
-        dependsOn(subprojects.map { it.tasks.named("detekt") })
+        dependsOn(subprojects.filter { it.name != "agent" }.map { it.tasks.named("detekt") })
     }
 }
