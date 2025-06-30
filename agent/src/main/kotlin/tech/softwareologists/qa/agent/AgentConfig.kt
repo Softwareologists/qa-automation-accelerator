@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.reactive.function.client.WebClient
 import tech.softwareologists.qa.core.FlowExecutor
 import tech.softwareologists.qa.fileio.NioFileIoEmulator
 import tech.softwareologists.qa.http.KtorHttpEmulator
@@ -29,4 +30,7 @@ class AgentConfig {
     @Bean
     fun yamlMapper(): ObjectMapper =
         ObjectMapper(YAMLFactory()).registerKotlinModule().findAndRegisterModules()
+
+    @Bean
+    fun webClient(builder: WebClient.Builder): WebClient = builder.build()
 }
