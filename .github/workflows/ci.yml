@@ -31,6 +31,8 @@ jobs:
           echo "steps: []" >> examples/sample-workflow.yaml
       - name: Run sample flow
         run: gradle run -PmainClass=tech.softwareologists.qa.app.MainKt --args="replay --flow examples/sample-workflow.yaml --reportDir reports"
+        env:
+          JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
       - name: Publish reports
         uses: actions/upload-artifact@v4
         with:
