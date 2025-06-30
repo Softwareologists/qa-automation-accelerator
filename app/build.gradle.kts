@@ -1,5 +1,4 @@
 plugins {
-    application
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose)
 }
@@ -14,8 +13,18 @@ dependencies {
     testImplementation(libs.compose.ui.test.junit4)
 }
 
-application {
-    mainClass.set("tech.softwareologists.qa.app.ComposeMainKt")
+
+compose.desktop {
+    application {
+        mainClass = "tech.softwareologists.qa.app.ComposeMainKt"
+        nativeDistributions {
+            targetFormats(
+                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
+                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
+                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
+            )
+        }
+    }
 }
 
 tasks.register<JavaExec>("runCli") {

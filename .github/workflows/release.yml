@@ -7,7 +7,10 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     env:
       JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
     steps:
@@ -30,7 +33,7 @@ jobs:
       - name: Lint
         run: gradle ktlintCheck
       - name: Build Distributions
-        run: gradle :app:distZip :agent:bootJar
+        run: gradle :app:packageReleaseDistributionForCurrentOS :agent:bootJar
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -39,4 +42,5 @@ jobs:
           files: |
             app/build/distributions/*.zip
             agent/build/libs/*.jar
+            app/build/compose/**/*.*
 
