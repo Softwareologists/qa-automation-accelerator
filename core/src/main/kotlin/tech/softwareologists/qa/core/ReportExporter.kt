@@ -7,12 +7,21 @@ import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.databind.ObjectMapper
 
 /** Utility for exporting run results in JUnit-XML and HTML formats. */
 object ReportExporter {
-    fun writeReports(dir: Path, flowName: String, success: Boolean, details: List<String> = emptyList()) {
+    fun writeReports(
+        dir: Path,
+        flowName: String,
+        success: Boolean,
+        details: List<String> = emptyList(),
+        timings: Map<String, Long> = emptyMap()
+    ) {
         writeJUnitXml(dir.resolve("junit.xml"), flowName, success, details)
         writeHtml(dir.resolve("summary.html"), flowName, success, details)
+        writeResultJson(dir.resolve("result.json"), success, details, timings)
     }
 
     private fun writeJUnitXml(target: Path, flowName: String, success: Boolean, details: List<String>) {
@@ -65,5 +74,16 @@ object ReportExporter {
             append("</body></html>")
         }
         Files.writeString(target, body)
+    }
+
+    private fun writeResultJson(
+        target: Path,
+        success: Boolean,
+        details: List<String>,
+        timings: Map<String, Long>
+    ) {
+        val mapper = ObjectMapper().registerKotlinModule().findAndRegisterModules()
+        val result = ResultManifest(success, timings, details)
+        Files.newBufferedWriter(target).use { mapper.writeValue(it, result) }
     }
 }

@@ -77,8 +77,9 @@ class FlowExecutor(
         success: Boolean,
         details: List<String> = emptyList(),
     ) {
+        val start = java.time.Instant.now()
         val timestamp = java.time.format.DateTimeFormatter.ISO_INSTANT
-            .format(java.time.Instant.now())
+            .format(start)
         val targetDir = reportRoot.resolve(flowName).resolve(timestamp)
         java.nio.file.Files.createDirectories(targetDir)
 
@@ -87,8 +88,13 @@ class FlowExecutor(
                 .registerKotlinModule()
                 .findAndRegisterModules()
 
+        val interactions = httpEmulator.interactions()
         java.nio.file.Files.newBufferedWriter(targetDir.resolve("http_interactions.json")).use {
-            mapper.writeValue(it, httpEmulator.interactions())
+            mapper.writeValue(it, interactions)
+        }
+
+        java.nio.file.Files.newBufferedWriter(targetDir.resolve("http.har")).use {
+            mapper.writeValue(it, interactions.toHar())
         }
 
         java.nio.file.Files.newBufferedWriter(targetDir.resolve("file_events.json")).use {
@@ -97,6 +103,9 @@ class FlowExecutor(
 
         databaseManager?.exportDump(targetDir.resolve("db_dump.sql"))
 
-        ReportExporter.writeReports(targetDir, flowName, success, details)
+        val end = java.time.Instant.now()
+        val timings = mapOf("collectionMs" to java.time.Duration.between(start, end).toMillis())
+
+        ReportExporter.writeReports(targetDir, flowName, success, details, timings)
     }
 }

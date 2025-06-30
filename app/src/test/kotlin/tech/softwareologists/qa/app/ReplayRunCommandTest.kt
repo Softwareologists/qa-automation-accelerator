@@ -42,10 +42,12 @@ class ReplayRunCommandTest {
         val flowName = flowFile.fileName.toString().substringBeforeLast('.')
         val tsDir = Files.list(reports.resolve(flowName)).findFirst().get()
         assertTrue(Files.exists(tsDir.resolve("http_interactions.json")))
+        assertTrue(Files.exists(tsDir.resolve("http.har")))
         assertTrue(Files.exists(tsDir.resolve("file_events.json")))
         assertTrue(Files.exists(tsDir.resolve("db_dump.sql")))
         assertTrue(Files.exists(tsDir.resolve("junit.xml")))
         assertTrue(Files.exists(tsDir.resolve("summary.html")))
+        assertTrue(Files.exists(tsDir.resolve("result.json")))
 
         dir.toFile().deleteRecursively()
         reports.toFile().deleteRecursively()
