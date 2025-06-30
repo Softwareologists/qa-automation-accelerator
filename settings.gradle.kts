@@ -28,6 +28,7 @@ include("plugins:database-manager-h2")
 include("plugins:database-manager-jdbc")
 include("plugins:database-manager-sqlserver")
 include("app")
+include("agent")
 
 project(":plugins:http-emulator").projectDir = file("plugins/http-emulator")
 project(":plugins:fileio-emulator").projectDir = file("plugins/fileio-emulator")

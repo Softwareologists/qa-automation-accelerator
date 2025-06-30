@@ -2,16 +2,16 @@ package tech.softwareologists.qa.launcher
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.jar.JarEntry
 import java.util.jar.Attributes
+import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
 import java.util.jar.Manifest
 import javax.tools.ToolProvider
+import tech.softwareologists.qa.core.LaunchConfig
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import tech.softwareologists.qa.core.LaunchConfig
 
 class JarLauncherPluginTest {
     @Test
