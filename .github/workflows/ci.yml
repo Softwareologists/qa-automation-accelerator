@@ -22,8 +22,15 @@ jobs:
           gradle-version: '8.7'
       - name: Build modules
         run: gradle build
+      - name: Create sample workflow
+        run: |
+          mkdir -p examples
+          echo "version: '1'" > examples/sample-workflow.yaml
+          echo "appVersion: 'sample'" >> examples/sample-workflow.yaml
+          echo "emulator:\n  http:\n    interactions: []\n  file:\n    events: []" >> examples/sample-workflow.yaml
+          echo "steps: []" >> examples/sample-workflow.yaml
       - name: Run sample flow
-        run: gradle run --args="replay --flow examples/sample-workflow.yaml --reportDir reports"
+        run: gradle run -PmainClass=tech.softwareologists.qa.app.MainKt --args="replay --flow examples/sample-workflow.yaml --reportDir reports"
       - name: Publish reports
         uses: actions/upload-artifact@v4
         with:
