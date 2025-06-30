@@ -4,6 +4,11 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
+import java.nio.file.Path
+import tech.softwareologists.qa.core.FlowIO
+import tech.softwareologists.qa.core.FlowStep
 import tech.softwareologists.qa.core.LaunchConfig
 import tech.softwareologists.qa.core.PluginRegistry
 
@@ -34,10 +39,34 @@ class ReplayCommand : CliktCommand(help = "Replay a recorded flow") {
     }
 }
 
-class BranchCommand : CliktCommand(help = "Manage branches") {
+class BranchCreateCommand : CliktCommand(name = "create", help = "Create a new branch from a flow") {
+    private val base by option("--base", help = "Base flow YAML")
+        .path(mustExist = true)
+        .required()
+    private val at by option("--at", help = "Step ID to branch at").required()
+    private val name by option("--name", help = "Name of the new branch").required()
+
     override fun run() {
-        echo("Branching (TODO)")
+        val flow = FlowIO.read(base)
+        val index = flow.steps.indexOfFirst { it.id == at }
+        if (index < 0) {
+            echo("Step '$at' not found in ${'$'}base")
+            return
+        }
+
+        val branch = flow.copy(steps = flow.steps.subList(0, index + 1))
+        val target = (base.parent ?: Path.of(".")).resolve("${name}.yaml")
+        FlowIO.write(branch, target)
+        echo("Created branch $name at step $at -> $target")
     }
+}
+
+class BranchCommand : CliktCommand(help = "Manage branches") {
+    init {
+        subcommands(BranchCreateCommand())
+    }
+
+    override fun run() = Unit
 }
 
 class RunCommand : CliktCommand(help = "Run a flow end-to-end") {

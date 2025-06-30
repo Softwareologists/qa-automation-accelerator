@@ -55,6 +55,12 @@ Replay a flow:
 ./gradlew run --args="replay --flow examples/sample-flow.yaml --reportDir reports/"
 ```
 
+Create a branch from an existing flow:
+
+```bash
+./gradlew run --args="branch create --base examples/sample-flow.yaml --at 1 --name variant"
+```
+
 List available commands:
 
 ```bash
