@@ -65,6 +65,7 @@ class EvidenceCollectionTest {
         executor.collectEvidence("sample", dir, success = true)
         val tsDir = Files.list(dir.resolve("sample")).findFirst().get()
         assertTrue(Files.exists(tsDir.resolve("http_interactions.json")))
+        assertTrue(Files.exists(tsDir.resolve("http.har")))
         assertTrue(Files.exists(tsDir.resolve("file_events.json")))
         assertTrue(Files.exists(tsDir.resolve("db_dump.sql")))
         val junit = tsDir.resolve("junit.xml")
@@ -79,6 +80,11 @@ class EvidenceCollectionTest {
         assertTrue(Files.exists(html))
         val content = Files.readString(html)
         assertTrue("Status: <strong>Passed</strong>" in content)
+
+        val result = tsDir.resolve("result.json")
+        assertTrue(Files.exists(result))
+        val json = Files.readString(result)
+        assertTrue(json.contains("\"success\":true"))
         dir.toFile().deleteRecursively()
     }
 }
