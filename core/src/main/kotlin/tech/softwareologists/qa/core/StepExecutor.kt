@@ -11,6 +11,12 @@ class StepExecutor(private val action: (FlowStep) -> Map<String, Any?> = { empty
     private fun execute(step: FlowStep) {
         step.loop?.let { runLoop(step.id, it); return }
 
+        step.assertion?.let {
+            checkAssertion(it)
+            results[step.id] = mapOf("assert" to true)
+            return
+        }
+
         val conditionMet = step.condition?.let { evaluate(it) } ?: true
         val branch = if (conditionMet) step.then ?: emptyList() else step.elseSteps ?: emptyList()
         if (branch.isNotEmpty()) {
@@ -36,7 +42,22 @@ class StepExecutor(private val action: (FlowStep) -> Map<String, Any?> = { empty
     private fun evaluate(cond: Condition): Boolean {
         val result = results[cond.stepId] ?: return false
         val path = cond.path.removePrefix("$.")
-        val value = (result[path] ?: return false).toString()
+        val value = result[path]?.toString() ?: return false
         return value == cond.equals
+    }
+
+    private fun value(stepId: String, path: String): String? {
+        val result = results[stepId] ?: return null
+        val key = path.removePrefix("$.")
+        return result[key]?.toString()
+    }
+
+    private fun checkAssertion(assertion: Assertion) {
+        val actual = value(assertion.stepId, assertion.path)
+        if (actual != assertion.equals) {
+            throw AssertionError(
+                "Assertion failed for step ${assertion.stepId} at ${assertion.path}: expected ${assertion.equals}, got $actual"
+            )
+        }
     }
 }
