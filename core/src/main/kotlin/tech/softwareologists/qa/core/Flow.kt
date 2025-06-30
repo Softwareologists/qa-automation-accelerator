@@ -32,12 +32,20 @@ data class FileData(
 data class FlowStep(
     val id: String,
     val description: String,
+    @com.fasterxml.jackson.annotation.JsonProperty("assert")
+    val assertion: Assertion? = null,
     @com.fasterxml.jackson.annotation.JsonProperty("if")
     val condition: Condition? = null,
     val then: List<FlowStep>? = null,
     @com.fasterxml.jackson.annotation.JsonProperty("else")
     val elseSteps: List<FlowStep>? = null,
     val loop: Loop? = null,
+)
+
+data class Assertion(
+    val stepId: String,
+    val path: String,
+    val equals: String,
 )
 
 data class Condition(

@@ -110,6 +110,8 @@ definitions:
         type: string
       description:
         type: string
+      assert:
+        $ref: '#/definitions/condition'
       if:
         $ref: '#/definitions/condition'
       then:

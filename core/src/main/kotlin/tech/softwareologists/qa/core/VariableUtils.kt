@@ -43,8 +43,12 @@ private fun FlowStep.applyVariables(vars: Map<String, String>): FlowStep {
     val appliedLoop = loop?.let { loop ->
         Loop(loop.steps.map { it.applyVariables(vars) }, loop.until, loop.count)
     }
+    val appliedAssert = assertion?.let {
+        Assertion(it.stepId, interpolate(it.path, vars), interpolate(it.equals, vars))
+    }
     return copy(
         description = interpolate(description, vars),
+        assertion = appliedAssert,
         then = appliedThen,
         elseSteps = appliedElse,
         loop = appliedLoop
