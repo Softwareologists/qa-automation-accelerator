@@ -71,7 +71,12 @@ class FlowExecutor(
      * Writes HTTP interactions, file events, and an optional database dump to
      * `reports/{flow}/{timestamp}` under [reportRoot].
      */
-    fun collectEvidence(flowName: String, reportRoot: java.nio.file.Path) {
+    fun collectEvidence(
+        flowName: String,
+        reportRoot: java.nio.file.Path,
+        success: Boolean,
+        details: List<String> = emptyList(),
+    ) {
         val timestamp = java.time.format.DateTimeFormatter.ISO_INSTANT
             .format(java.time.Instant.now())
         val targetDir = reportRoot.resolve(flowName).resolve(timestamp)
@@ -91,5 +96,7 @@ class FlowExecutor(
         }
 
         databaseManager?.exportDump(targetDir.resolve("db_dump.sql"))
+
+        ReportExporter.writeReports(targetDir, flowName, success, details)
     }
 }
