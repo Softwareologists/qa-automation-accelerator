@@ -116,9 +116,14 @@ class RunCommand : CliktCommand(help = "Run a flow end-to-end") {
         }
 
         val executor = FlowExecutor(http, fileIo, launcher, db)
-        executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true")))
         val name = flowFile.fileName.toString().substringBeforeLast('.')
-        executor.collectEvidence(name, reportDir, success = true)
+        try {
+            executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true")))
+            executor.collectEvidence(name, reportDir, success = true)
+        } catch (e: Exception) {
+            executor.collectEvidence(name, reportDir, success = false, details = listOfNotNull(e.message))
+            throw e
+        }
         echo("Run finished for ${flowFile.fileName}")
     }
 }

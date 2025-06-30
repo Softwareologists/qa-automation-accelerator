@@ -66,12 +66,15 @@ class FlowExecutor(
         fileIoEmulator.stop()
         httpEmulator.stop()
 
-        val expected = resolvedFlow.emulator.http.interactions.toStubMappings()
-        val actual = httpEmulator.interactions().toStubMappings()
-        if (actual != expected) {
-            throw IllegalStateException(
-                "HTTP interactions mismatch. Expected $expected, got $actual"
-            )
+        val expected = resolvedFlow.emulator.http.interactions
+        val actual = httpEmulator.interactions()
+        val diff = diffInteractions(expected, actual)
+        if (diff.isNotEmpty()) {
+            val message = buildString {
+                append("HTTP interactions mismatch:\n")
+                append(diff.joinToString("\n"))
+            }
+            throw IllegalStateException(message)
         }
 
         StepExecutor(stepAction).run(resolvedFlow.steps)
