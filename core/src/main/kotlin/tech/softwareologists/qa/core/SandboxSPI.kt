@@ -86,8 +86,14 @@ interface DatabaseManager {
     /** Starts the database and returns connection information. */
     fun startDatabase(): DatabaseInfo
 
+    /** Seeds the database using the SQL script at [dataset]. */
+    fun seed(dataset: Path)
+
     /** Exports a dump of the current database state to the given path. */
     fun exportDump(target: Path)
+
+    /** Cleans up any seeded data, returning the database to an empty state. */
+    fun cleanup()
 
     /** Stops the database and cleans up resources. */
     fun stop()

@@ -39,8 +39,10 @@ class TestLauncher : LauncherPlugin {
 
 class TestDatabaseManager : DatabaseManager {
     override fun startDatabase(): DatabaseInfo = DatabaseInfo("", "", "")
+    override fun seed(dataset: Path) {}
     override fun exportDump(target: Path) {
         Files.writeString(target, "dump")
     }
+    override fun cleanup() {}
     override fun stop() {}
 }

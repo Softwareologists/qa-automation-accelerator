@@ -27,6 +27,19 @@ class SqlServerLocalDbManager : DatabaseManager {
         return DatabaseInfo(jdbcUrl, "", "")
     }
 
+    override fun seed(dataset: Path) {
+        val conn = requireNotNull(connection) { "Database not started" }
+        val statements = java.nio.file.Files.readString(dataset)
+            .split(";")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        conn.createStatement().use { stmt ->
+            for (sql in statements) {
+                stmt.execute(sql)
+            }
+        }
+    }
+
     override fun exportDump(target: Path) {
         val inst = requireNotNull(instanceName) { "Database not started" }
         val db = requireNotNull(databaseName) { "Database not started" }
@@ -39,6 +52,25 @@ class SqlServerLocalDbManager : DatabaseManager {
         ).inheritIO().start()
         val exit = process.waitFor()
         check(exit == 0) { "SqlPackage failed with exit code $exit" }
+    }
+
+    override fun cleanup() {
+        val conn = requireNotNull(connection) { "Database not started" }
+        val tables = mutableListOf<Pair<String?, String>>()
+        val meta = conn.metaData
+        meta.getTables(null, null, "%", arrayOf("TABLE")).use { rs ->
+            while (rs.next()) {
+                val schema = rs.getString("TABLE_SCHEM")
+                val table = rs.getString("TABLE_NAME")
+                tables += schema to table
+            }
+        }
+        conn.createStatement().use { stmt ->
+            for ((schema, table) in tables) {
+                val qualified = if (schema != null) "[$schema].[$table]" else "[$table]"
+                stmt.executeUpdate("DROP TABLE $qualified")
+            }
+        }
     }
 
     override fun stop() {
