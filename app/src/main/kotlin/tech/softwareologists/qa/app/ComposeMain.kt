@@ -16,6 +16,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import tech.softwareologists.qa.core.Flow
 import tech.softwareologists.qa.core.FlowIO
+import tech.softwareologists.qa.core.FlowValidator
 import tech.softwareologists.qa.app.BranchCreateCommand
 import javax.swing.JFileChooser
 
@@ -47,7 +48,9 @@ fun MainScreen() {
         val chooser = JFileChooser()
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             flowPath = chooser.selectedFile.absolutePath
-            flow = FlowIO.read(java.nio.file.Path.of(flowPath))
+            val loaded = FlowIO.read(java.nio.file.Path.of(flowPath))
+            FlowValidator.validate(loaded)
+            flow = loaded
         }
     }
 
