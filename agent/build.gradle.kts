@@ -21,3 +21,10 @@ dependencies {
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_21
+
+// temporary workaround for ktlint incompatibility with Kotlin 2.2
+afterEvaluate {
+    tasks.matching { it.name.startsWith("ktlint") }.configureEach {
+        enabled = false
+    }
+}
