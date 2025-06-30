@@ -17,6 +17,9 @@ import androidx.compose.ui.window.application
 import tech.softwareologists.qa.core.Flow
 import tech.softwareologists.qa.core.FlowIO
 import tech.softwareologists.qa.core.FlowValidator
+import tech.softwareologists.qa.core.PluginRegistry
+import tech.softwareologists.qa.core.FlowExecutor
+import tech.softwareologists.qa.core.LaunchConfig
 import tech.softwareologists.qa.app.BranchCreateCommand
 import javax.swing.JFileChooser
 
@@ -26,6 +29,7 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
     var isRecording by remember { mutableStateOf(false) }
     var flowPath by remember { mutableStateOf("") }
     var flow by remember { mutableStateOf<Flow?>(null) }
+    var diff by remember { mutableStateOf<List<String>?>(null) }
 
     fun chooseFile() {
         val chooser = JFileChooser()
@@ -73,6 +77,26 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
                     "--name", step.id + "-branch"
                 )
             )
+        }
+    }
+
+    fun runFlow() {
+        if (flowPath.isBlank()) return
+        val loaded = FlowIO.read(java.nio.file.Path.of(flowPath))
+        val http = PluginRegistry.httpEmulators.firstOrNull()
+        val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
+        val launcher = PluginRegistry.launcherPlugins.firstOrNull()
+        val db = PluginRegistry.databaseManagers.firstOrNull()
+        if (http == null || fileIo == null || launcher == null) return
+        val executor = FlowExecutor(http, fileIo, launcher, db)
+        diff = try {
+            executor.playback(
+                loaded,
+                LaunchConfig(java.nio.file.Paths.get("/usr/bin/true"))
+            )
+            null
+        } catch (e: Exception) {
+            e.message?.lines()?.drop(1)
         }
     }
 
@@ -134,6 +158,32 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
                 Button(onClick = { stopRecording() }, enabled = isRecording) {
                     Text("Stop")
                 }
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = { runFlow() }, enabled = flow != null) {
+                    Text("Run")
+                }
+            }
+
+            diff?.let { lines ->
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { diff = null },
+                    confirmButton = {
+                        Button(onClick = { diff = null }) { Text("Close") }
+                    },
+                    title = { Text("Mismatch") },
+                    text = {
+                        Column {
+                            lines.forEach { line ->
+                                val color = when {
+                                    line.startsWith("+") -> androidx.compose.ui.graphics.Color.Green
+                                    line.startsWith("-") -> androidx.compose.ui.graphics.Color.Red
+                                    else -> androidx.compose.ui.graphics.Color.Unspecified
+                                }
+                                Text(line, color = color)
+                            }
+                        }
+                    }
+                )
             }
         }
     }

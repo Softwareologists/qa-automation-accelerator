@@ -9,6 +9,7 @@ class TestHttpEmulator : HttpEmulator {
     private val recorded = mutableListOf<HttpInteraction>()
     override fun start(): String {
         instance = this
+        recorded.clear()
         return "http://localhost"
     }
     override fun stop() {}

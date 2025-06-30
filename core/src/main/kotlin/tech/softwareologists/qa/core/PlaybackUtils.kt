@@ -33,3 +33,25 @@ fun simulateFileEvents(events: List<FileEvent>) {
         }
     }
 }
+
+/**
+ * Generate a simple unified diff between two lists of [HttpInteraction]s.
+ * Lines starting with '-' denote expected interactions, '+' denote actual
+ * interactions that differ.
+ */
+fun diffInteractions(
+    expected: List<HttpInteraction>,
+    actual: List<HttpInteraction>
+): List<String> {
+    val lines = mutableListOf<String>()
+    val max = maxOf(expected.size, actual.size)
+    for (i in 0 until max) {
+        val e = expected.getOrNull(i)
+        val a = actual.getOrNull(i)
+        if (e != a) {
+            if (e != null) lines += "- $e"
+            if (a != null) lines += "+ $a"
+        }
+    }
+    return lines
+}

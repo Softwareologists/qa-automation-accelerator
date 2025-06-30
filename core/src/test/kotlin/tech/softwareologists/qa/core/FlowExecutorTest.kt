@@ -5,6 +5,7 @@ import java.nio.file.Paths
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 private class FakeHttpEmulator(private val stubs: List<HttpInteraction>) : HttpEmulator {
     private val recorded = mutableListOf<HttpInteraction>()
@@ -81,9 +82,10 @@ class FlowExecutorTest {
             NoopLauncher()
         )
         val tempDir = createTempDirectory()
-        assertFailsWith<IllegalStateException> {
+        val ex = assertFailsWith<IllegalStateException> {
             executor.playback(flow, LaunchConfig(Paths.get("/usr/bin/true"), workingDir = tempDir))
         }
+        assertTrue(ex.message!!.contains("HTTP interactions mismatch"))
         tempDir.toFile().deleteRecursively()
     }
 }

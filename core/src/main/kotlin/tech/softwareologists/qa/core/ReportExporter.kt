@@ -68,7 +68,17 @@ object ReportExporter {
             append("</strong></p>")
             if (!success) {
                 append("<pre>")
-                append(details.joinToString("\n"))
+                details.forEach { line ->
+                    val escaped = line
+                        .replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                    when {
+                        line.startsWith("+") -> append("<span style=\"color:green\">$escaped</span>\n")
+                        line.startsWith("-") -> append("<span style=\"color:red\">$escaped</span>\n")
+                        else -> append("$escaped\n")
+                    }
+                }
                 append("</pre>")
             }
             append("</body></html>")
