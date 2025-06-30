@@ -1,5 +1,6 @@
 package tech.softwareologists.qa.launcher
 
+import org.junit.Assume.assumeTrue
 import tech.softwareologists.qa.core.LaunchConfig
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
@@ -17,6 +18,8 @@ class DotNetLauncherPluginTest {
 
     @Test
     fun should_launch_dotnet_process() {
+        assumeTrue("dotnet CLI is not available", isDotnetInstalled())
+
         val dir = createTempDirectory()
         val dll = createTestAssembly(dir)
         val plugin = DotNetLauncherPlugin()
@@ -35,5 +38,10 @@ class DotNetLauncherPluginTest {
             .start().waitFor()
         return outDir.resolve("Hello.dll")
     }
-}
 
+    private fun isDotnetInstalled(): Boolean = try {
+        ProcessBuilder("dotnet", "--version").start().waitFor() == 0
+    } catch (e: Exception) {
+        false
+    }
+}
