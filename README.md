@@ -55,6 +55,9 @@ Replay a flow:
 ./gradlew run --args="replay --flow examples/sample-flow.yaml --reportDir reports/"
 ```
 
+The report directory will contain `junit.xml` and `summary.html` alongside JSON
+evidence files.
+
 Create a branch from an existing flow:
 
 ```bash

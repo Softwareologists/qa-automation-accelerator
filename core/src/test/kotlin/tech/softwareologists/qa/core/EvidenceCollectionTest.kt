@@ -59,11 +59,13 @@ class EvidenceCollectionTest {
         )
         val dir = createTempDirectory()
         executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true"), workingDir = dir))
-        executor.collectEvidence("sample", dir)
+        executor.collectEvidence("sample", dir, success = true)
         val tsDir = Files.list(dir.resolve("sample")).findFirst().get()
         assertTrue(Files.exists(tsDir.resolve("http_interactions.json")))
         assertTrue(Files.exists(tsDir.resolve("file_events.json")))
         assertTrue(Files.exists(tsDir.resolve("db_dump.sql")))
+        assertTrue(Files.exists(tsDir.resolve("junit.xml")))
+        assertTrue(Files.exists(tsDir.resolve("summary.html")))
         dir.toFile().deleteRecursively()
     }
 }
