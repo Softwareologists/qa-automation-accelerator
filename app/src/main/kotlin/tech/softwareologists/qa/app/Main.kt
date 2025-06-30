@@ -11,6 +11,7 @@ import tech.softwareologists.qa.core.FlowIO
 import tech.softwareologists.qa.core.FlowStep
 import tech.softwareologists.qa.core.LaunchConfig
 import tech.softwareologists.qa.core.PluginRegistry
+import tech.softwareologists.qa.core.FlowValidator
 
 class RecordCommand : CliktCommand(help = "Record application interactions") {
     private val executable by argument(help = "Path to application JAR/DLL").path()
@@ -48,6 +49,7 @@ class BranchCreateCommand : CliktCommand(name = "create", help = "Create a new b
 
     override fun run() {
         val flow = FlowIO.read(base)
+        FlowValidator.validate(flow)
         val index = flow.steps.indexOfFirst { it.id == at }
         if (index < 0) {
             echo("Step '$at' not found in ${'$'}base")

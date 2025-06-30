@@ -2,6 +2,7 @@ import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
 import tech.softwareologists.qa.core.*
 import tech.softwareologists.qa.app.BranchCreateCommand
 
@@ -33,6 +34,21 @@ class BranchCommandTest {
         assertTrue(java.nio.file.Files.exists(variantFile))
         val branched = FlowIO.read(variantFile)
         assertEquals(steps.subList(0, 2), branched.steps)
+
+        dir.toFile().deleteRecursively()
+    }
+
+    @Test
+    fun branch_command_rejects_invalid_flow() {
+        val dir = createTempDirectory()
+        val base = dir.resolve("flow.yaml")
+        java.nio.file.Files.writeString(base, "version: '1'")
+
+        assertFailsWith<Exception> {
+            BranchCreateCommand().parse(
+                arrayOf("--base", base.toString(), "--at", "1", "--name", "x")
+            )
+        }
 
         dir.toFile().deleteRecursively()
     }

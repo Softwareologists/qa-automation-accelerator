@@ -5,6 +5,7 @@ import java.time.Instant
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class FlowIOTest {
     @Test
@@ -31,5 +32,17 @@ class FlowIOTest {
 
         Files.deleteIfExists(file)
         Files.deleteIfExists(tempDir)
+    }
+
+    @Test
+    fun invalid_flow_is_rejected() {
+        val dir = createTempDirectory()
+        val file = dir.resolve("bad.yaml")
+        Files.writeString(file, "version: '1'")
+
+        assertFailsWith<Exception> { FlowIO.read(file) }
+
+        Files.deleteIfExists(file)
+        Files.deleteIfExists(dir)
     }
 }

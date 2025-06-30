@@ -29,3 +29,4 @@ compose-ui-test-junit4 = { group = "org.jetbrains.compose.ui", name = "ui-test-j
 jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
 jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
+json-schema-validator = { group = "com.networknt", name = "json-schema-validator", version = "1.5.6" }
