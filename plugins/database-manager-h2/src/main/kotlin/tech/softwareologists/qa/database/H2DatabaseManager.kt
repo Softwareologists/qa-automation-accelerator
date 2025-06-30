@@ -18,9 +18,27 @@ class H2DatabaseManager : DatabaseManager {
         return DatabaseInfo(jdbcUrl, "sa", "")
     }
 
+    override fun seed(dataset: Path) {
+        val conn = requireNotNull(connection) { "Database not started" }
+        val statements = java.nio.file.Files.readString(dataset)
+            .split(";")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        conn.createStatement().use { stmt ->
+            for (sql in statements) {
+                stmt.execute(sql)
+            }
+        }
+    }
+
     override fun exportDump(target: Path) {
         val conn = requireNotNull(connection) { "Database not started" }
         Script.process(conn, target.toString(), "", "")
+    }
+
+    override fun cleanup() {
+        val conn = requireNotNull(connection) { "Database not started" }
+        conn.createStatement().use { stmt -> stmt.execute("DROP ALL OBJECTS") }
     }
 
     override fun stop() {

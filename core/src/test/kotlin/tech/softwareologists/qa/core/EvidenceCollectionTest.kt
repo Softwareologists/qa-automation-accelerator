@@ -32,9 +32,11 @@ private class DummyLauncher(private val http: RecordingHttpEmulator) : LauncherP
 
 private class DumpingDatabaseManager : DatabaseManager {
     override fun startDatabase(): DatabaseInfo = DatabaseInfo("", "", "")
+    override fun seed(dataset: java.nio.file.Path) {}
     override fun exportDump(target: java.nio.file.Path) {
         Files.writeString(target, "dump")
     }
+    override fun cleanup() {}
     override fun stop() {}
 }
 

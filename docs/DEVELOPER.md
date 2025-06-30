@@ -33,7 +33,7 @@ All extensible behaviours are defined in the `core` module under
 - `HttpEmulator` – records and replays HTTP calls.
 - `FileIoEmulator` – monitors file system events.
 - `LauncherPlugin` – launches the system under test.
-- `DatabaseManager` – provisions and exports sandbox databases.
+- `DatabaseManager` – provisions sandbox databases, seeds test data, exports dumps, and cleans up.
 
 A new plugin implements one of these interfaces and registers itself via the
 Java `ServiceLoader`. Each plugin module provides a service descriptor under

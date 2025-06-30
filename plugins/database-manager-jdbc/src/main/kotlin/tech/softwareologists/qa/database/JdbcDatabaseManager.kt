@@ -23,6 +23,19 @@ class JdbcDatabaseManager(
         return DatabaseInfo(jdbcUrl, username, password)
     }
 
+    override fun seed(dataset: Path) {
+        val conn = requireNotNull(connection) { "Database not started" }
+        val statements = Files.readString(dataset)
+            .split(";")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        conn.createStatement().use { stmt ->
+            for (sql in statements) {
+                stmt.execute(sql)
+            }
+        }
+    }
+
     override fun exportDump(target: Path) {
         val conn = requireNotNull(connection) { "Database not started" }
         conn.use { c ->
@@ -57,6 +70,27 @@ class JdbcDatabaseManager(
                 }
             }
             Files.writeString(target, sb.toString())
+        }
+    }
+
+    override fun cleanup() {
+        val conn = requireNotNull(connection) { "Database not started" }
+        conn.use { c ->
+            val tables = mutableListOf<Pair<String?, String>>()
+            val meta = c.metaData
+            meta.getTables(null, null, "%", arrayOf("TABLE")).use { rs ->
+                while (rs.next()) {
+                    val schema = rs.getString("TABLE_SCHEM")
+                    val table = rs.getString("TABLE_NAME")
+                    tables += schema to table
+                }
+            }
+            c.createStatement().use { stmt ->
+                for ((_, table) in tables) {
+                    val qualified = "\"$table\""
+                    stmt.executeUpdate("DROP TABLE IF EXISTS $qualified")
+                }
+            }
         }
     }
 
