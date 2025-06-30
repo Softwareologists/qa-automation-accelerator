@@ -74,7 +74,7 @@ List available commands:
 
 Sample workflows and reports are available under the `examples/` directory:
 
-- `examples/sample-http-file-workflow.yaml` — demonstrates mixed HTTP and file events.
+- `examples/sample-workflow.yaml` — demonstrates mixed HTTP and file events.
 - `examples/reports/` — contains example HTML and JUnit reports.
 
 ## Documentation
