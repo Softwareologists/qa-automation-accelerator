@@ -31,7 +31,7 @@ private class RequestLauncher(private val emulator: FakeHttpEmulator) : Launcher
     override fun supports(config: LaunchConfig): Boolean = true
 
     override fun launch(config: LaunchConfig): Process {
-        emulator.request("GET", "/hello")
+        emulator.request("GET", "/users/42")
         return ProcessBuilder("true").start()
     }
 }
@@ -44,11 +44,12 @@ private class NoopLauncher : LauncherPlugin {
 class FlowExecutorTest {
     @Test
     fun playback_succeeds_when_interactions_match() {
-        val stub = HttpInteraction("GET", "/hello")
+        val stub = HttpInteraction("GET", "/users/42")
         val flow = Flow(
             version = "1",
             appVersion = "test",
-            emulator = EmulatorData(HttpData(listOf(stub)), FileData()),
+            variables = mapOf("id" to "42"),
+            emulator = EmulatorData(HttpData(listOf(HttpInteraction("GET", "/users/${'$'}{id}"))), FileData()),
             steps = emptyList()
         )
 
