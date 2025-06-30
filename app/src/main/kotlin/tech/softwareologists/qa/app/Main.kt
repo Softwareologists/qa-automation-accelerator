@@ -7,11 +7,13 @@ import com.github.ajalt.clikt.parameters.types.path
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import java.nio.file.Path
+import java.nio.file.Paths
 import tech.softwareologists.qa.core.FlowIO
 import tech.softwareologists.qa.core.FlowStep
 import tech.softwareologists.qa.core.LaunchConfig
 import tech.softwareologists.qa.core.PluginRegistry
 import tech.softwareologists.qa.core.FlowValidator
+import tech.softwareologists.qa.core.FlowExecutor
 
 class RecordCommand : CliktCommand(help = "Record application interactions") {
     private val executable by argument(help = "Path to application JAR/DLL").path()
@@ -35,8 +37,30 @@ class RecordCommand : CliktCommand(help = "Record application interactions") {
 }
 
 class ReplayCommand : CliktCommand(help = "Replay a recorded flow") {
+    private val flowFile by option("--flow", help = "Flow YAML")
+        .path(mustExist = true)
+        .required()
+
     override fun run() {
-        echo("Replaying flow (TODO)")
+        val flow = FlowIO.read(flowFile)
+        val http = PluginRegistry.httpEmulators.firstOrNull()
+        val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
+        val launcher = PluginRegistry.launcherPlugins.firstOrNull()
+
+        if (http == null || fileIo == null || launcher == null) {
+            echo("Required plugins not available. Cannot replay flow.")
+            return
+        }
+
+        val executor = FlowExecutor(
+            http,
+            fileIo,
+            launcher,
+            PluginRegistry.databaseManagers.firstOrNull()
+        )
+
+        executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true")))
+        echo("Replay finished for ${flowFile.fileName}")
     }
 }
 
@@ -72,8 +96,30 @@ class BranchCommand : CliktCommand(help = "Manage branches") {
 }
 
 class RunCommand : CliktCommand(help = "Run a flow end-to-end") {
+    private val flowFile by option("--flow", help = "Flow YAML")
+        .path(mustExist = true)
+        .required()
+    private val reportDir by option("--reportDir", help = "Directory for reports")
+        .path()
+        .required()
+
     override fun run() {
-        echo("Running flow (TODO)")
+        val flow = FlowIO.read(flowFile)
+        val http = PluginRegistry.httpEmulators.firstOrNull()
+        val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
+        val launcher = PluginRegistry.launcherPlugins.firstOrNull()
+        val db = PluginRegistry.databaseManagers.firstOrNull()
+
+        if (http == null || fileIo == null || launcher == null) {
+            echo("Required plugins not available. Cannot run flow.")
+            return
+        }
+
+        val executor = FlowExecutor(http, fileIo, launcher, db)
+        executor.playback(flow, LaunchConfig(java.nio.file.Paths.get("/usr/bin/true")))
+        val name = flowFile.fileName.toString().substringBeforeLast('.')
+        executor.collectEvidence(name, reportDir, success = true)
+        echo("Run finished for ${flowFile.fileName}")
     }
 }
 
