@@ -30,3 +30,22 @@ steps:
     description: Issue API requests
   - id: "3"
     description: Write output file
+  - id: "4"
+    description: Poll for status
+    loop:
+      steps:
+        - id: "4.1"
+          description: Check status endpoint
+      until:
+        stepId: "4.1"
+        path: $.status
+        equals: READY
+  - id: "5"
+    description: Conditional cleanup
+    if:
+      stepId: "4.1"
+      path: $.status
+      equals: FAILED
+    then:
+      - id: "5.1"
+        description: Capture logs

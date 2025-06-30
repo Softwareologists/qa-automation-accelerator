@@ -28,7 +28,26 @@ data class FileData(
 )
 
 /** User-defined step within a flow. */
+@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 data class FlowStep(
     val id: String,
-    val description: String
+    val description: String,
+    @com.fasterxml.jackson.annotation.JsonProperty("if")
+    val condition: Condition? = null,
+    val then: List<FlowStep>? = null,
+    @com.fasterxml.jackson.annotation.JsonProperty("else")
+    val elseSteps: List<FlowStep>? = null,
+    val loop: Loop? = null,
+)
+
+data class Condition(
+    val stepId: String,
+    val path: String,
+    val equals: String,
+)
+
+data class Loop(
+    val steps: List<FlowStep>,
+    val until: Condition? = null,
+    val count: Int? = null,
 )

@@ -10,6 +10,7 @@
 - **Purpose-Built Sandbox**: Lightweight HTTP and file I/O emulators—no Docker or VM required.
 - **Extensible Plugin SPI**: Easily add new launchers, emulators, or database providers.
 - **Flow Definitions**: YAML-based flows with JSON-Schema validation for accuracy.
+- **Conditional Logic**: Execute steps conditionally and loop over actions for complex workflows.
 - **Branch Management**: Create variants at any step to test alternate scenarios.
 - **Evidence Collection**: Generate HTTP HARs, file event logs, database dumps, JUnit-XML, and HTML reports.
 - **CI/CD Ready**: Automated builds, sample flow runs, and report publishing via GitHub Actions.
@@ -31,6 +32,11 @@ See [docs/UI_WALKTHROUGH.md](docs/UI_WALKTHROUGH.md) for a walkthrough of the de
 ### CLI Quickstart
 
 See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for detailed command examples.
+
+### Conditional Steps
+
+Flows can include `if`/`then`/`else` blocks and `loop` directives. The
+`FlowExecutor` evaluates these at runtime to support polling and cleanup logic.
 ## Examples
 
 Sample workflows and reports are available under the `examples/` directory:
