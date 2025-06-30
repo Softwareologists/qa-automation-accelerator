@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
@@ -22,6 +24,10 @@ jobs:
           gradle-version: '8.7'
       - name: Build modules
         run: gradle build
+      - name: Run tests
+        run: gradle test
+      - name: Lint
+        run: gradle ktlintCheck
       - name: Create sample workflow
         run: |
           mkdir -p examples
@@ -30,9 +36,9 @@ jobs:
           echo "emulator:\n  http:\n    interactions: []\n  file:\n    events: []" >> examples/sample-workflow.yaml
           echo "steps: []" >> examples/sample-workflow.yaml
       - name: Run sample flow
-        run: gradle run -PmainClass=tech.softwareologists.qa.app.MainKt --args="replay --flow examples/sample-workflow.yaml --reportDir reports"
-        env:
-          JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
+        run: gradle runCli --args="--help"
+      - name: Ensure reports directory
+        run: mkdir -p reports
       - name: Publish reports
         uses: actions/upload-artifact@v4
         with:

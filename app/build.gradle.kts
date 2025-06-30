@@ -17,3 +17,9 @@ dependencies {
 application {
     mainClass.set("tech.softwareologists.qa.app.ComposeMainKt")
 }
+
+tasks.register<JavaExec>("runCli") {
+    group = "application"
+    mainClass.set("tech.softwareologists.qa.app.MainKt")
+    classpath = sourceSets["main"].runtimeClasspath
+}
