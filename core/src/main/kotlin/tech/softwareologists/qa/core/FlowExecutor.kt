@@ -1,5 +1,7 @@
 package tech.softwareologists.qa.core
 
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+
 /**
  * Executes recorded flows in either recording or playback mode.
  */
@@ -63,5 +65,31 @@ class FlowExecutor(
                 "HTTP interactions mismatch. Expected $expected, got $actual"
             )
         }
+    }
+
+    /**
+     * Writes HTTP interactions, file events, and an optional database dump to
+     * `reports/{flow}/{timestamp}` under [reportRoot].
+     */
+    fun collectEvidence(flowName: String, reportRoot: java.nio.file.Path) {
+        val timestamp = java.time.format.DateTimeFormatter.ISO_INSTANT
+            .format(java.time.Instant.now())
+        val targetDir = reportRoot.resolve(flowName).resolve(timestamp)
+        java.nio.file.Files.createDirectories(targetDir)
+
+        val mapper =
+            com.fasterxml.jackson.databind.ObjectMapper()
+                .registerKotlinModule()
+                .findAndRegisterModules()
+
+        java.nio.file.Files.newBufferedWriter(targetDir.resolve("http_interactions.json")).use {
+            mapper.writeValue(it, httpEmulator.interactions())
+        }
+
+        java.nio.file.Files.newBufferedWriter(targetDir.resolve("file_events.json")).use {
+            mapper.writeValue(it, fileIoEmulator.events())
+        }
+
+        databaseManager?.exportDump(targetDir.resolve("db_dump.sql"))
     }
 }
