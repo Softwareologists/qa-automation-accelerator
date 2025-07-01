@@ -2,9 +2,10 @@ package tech.softwareologists.qa.http
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.receiveText
 import io.ktor.server.request.uri
@@ -21,7 +22,7 @@ import tech.softwareologists.qa.core.HttpInteraction
  */
 class KtorHttpEmulator(private val stubs: List<HttpInteraction> = emptyList()) : HttpEmulator {
     private val recorded = mutableListOf<HttpInteraction>()
-    private var server: ApplicationEngine? = null
+    private var server: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
     private var baseUrl: String = ""
 
     override fun start(): String {
@@ -42,7 +43,7 @@ class KtorHttpEmulator(private val stubs: List<HttpInteraction> = emptyList()) :
                 }
             }
         }.start(wait = false)
-        val port = kotlinx.coroutines.runBlocking { server!!.resolvedConnectors().first().port }
+        val port = kotlinx.coroutines.runBlocking { server!!.engine.resolvedConnectors().first().port }
         baseUrl = "http://localhost:$port"
         return baseUrl
     }
