@@ -108,10 +108,11 @@ class FlowExecutor(
         success: Boolean,
         details: List<String> = emptyList(),
     ) {
+        val sanitizedFlowName = sanitizeIdentifier(flowName)
         val start = java.time.Instant.now()
         val timestamp = java.time.format.DateTimeFormatter.ISO_INSTANT
             .format(start)
-        val targetDir = reportRoot.resolve(flowName).resolve(timestamp)
+        val targetDir = reportRoot.resolve(sanitizedFlowName).resolve(timestamp)
         java.nio.file.Files.createDirectories(targetDir)
 
         val mapper =
@@ -137,6 +138,6 @@ class FlowExecutor(
         val end = java.time.Instant.now()
         val timings = mapOf("collectionMs" to java.time.Duration.between(start, end).toMillis())
 
-        ReportExporter.writeReports(targetDir, flowName, success, details, timings)
+        ReportExporter.writeReports(targetDir, sanitizedFlowName, success, details, timings)
     }
 }
