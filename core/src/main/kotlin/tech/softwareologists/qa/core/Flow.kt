@@ -54,6 +54,9 @@ data class Condition(
     val equals: String,
 )
 
+@com.fasterxml.jackson.annotation.JsonInclude(
+    com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
+)
 data class Loop(
     val steps: List<FlowStep>,
     val until: Condition? = null,
