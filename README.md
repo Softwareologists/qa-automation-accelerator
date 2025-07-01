@@ -30,6 +30,29 @@ See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed installation instr
 ### GUI Launcher
 See [docs/UI_WALKTHROUGH.md](docs/UI_WALKTHROUGH.md) for a walkthrough of the desktop UI.
 
+### GUI Quickstart
+
+1. Build the distribution:
+
+   ```bash
+   gradle :app:installDist
+   ```
+
+2. Launch the application:
+
+   ```bash
+   app/build/install/app/bin/app
+   ```
+
+   On Windows use `app\build\install\app\bin\app.bat`.
+
+3. In the main window:
+   - Click **Browse** next to **Application JAR/DLL** and select the executable
+     you want to test.
+   - Optionally open a **Flow YAML** file to reuse or branch an existing flow.
+   - Click **Start Recording** to capture interactions or choose **Run Flow**
+     to replay the selected YAML.
+
 ### CLI Quickstart
 
 See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for detailed command examples.
