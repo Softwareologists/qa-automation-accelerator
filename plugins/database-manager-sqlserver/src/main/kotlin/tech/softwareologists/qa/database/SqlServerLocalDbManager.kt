@@ -43,12 +43,13 @@ class SqlServerLocalDbManager : DatabaseManager {
     override fun exportDump(target: Path) {
         val inst = requireNotNull(instanceName) { "Database not started" }
         val db = requireNotNull(databaseName) { "Database not started" }
+        val sanitizedTarget = sanitizePath(target)
         val process = ProcessBuilder(
             "SqlPackage",
             "/Action:Script",
             "/SourceServerName:(localdb)\\$inst",
             "/SourceDatabaseName:$db",
-            "/TargetFile:${target.toAbsolutePath()}"
+            "/TargetFile:${sanitizedTarget.toAbsolutePath()}"
         ).inheritIO().start()
         val exit = process.waitFor()
         check(exit == 0) { "SqlPackage failed with exit code $exit" }
