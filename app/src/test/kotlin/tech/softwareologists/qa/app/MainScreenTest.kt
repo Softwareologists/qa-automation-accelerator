@@ -79,4 +79,20 @@ class MainScreenTest {
 
         dir.toFile().deleteRecursively()
     }
+
+    @Test
+    fun run_displays_process_logs() {
+        composeTestRule.setContent {
+            tech.softwareologists.qa.app.MainScreen()
+        }
+
+        composeTestRule.onNodeWithText("Application JAR/DLL")
+            .performTextInput("/tmp/app.jar")
+
+        composeTestRule.onNodeWithText("Run").performClick()
+
+        composeTestRule.waitUntil(timeoutMillis = 3000) {
+            composeTestRule.onAllNodesWithText("test-log").fetchSemanticsNodes().isNotEmpty()
+        }
+    }
 }

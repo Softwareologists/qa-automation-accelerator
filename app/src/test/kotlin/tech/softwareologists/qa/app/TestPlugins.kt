@@ -34,7 +34,7 @@ class TestLauncher : LauncherPlugin {
     override fun supports(config: LaunchConfig): Boolean = true
     override fun launch(config: LaunchConfig): Process {
         TestHttpEmulator.instance?.record()
-        return ProcessBuilder("true").start()
+        return ProcessBuilder("sh", "-c", "echo test-log").start()
     }
 }
 
