@@ -1,7 +1,11 @@
 package tech.softwareologists.qa.app
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,6 +34,9 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
     var flowPath by remember { mutableStateOf("") }
     var flow by remember { mutableStateOf<Flow?>(null) }
     var diff by remember { mutableStateOf<List<String>?>(null) }
+    val logs = remember { mutableStateListOf<String>() }
+    val scope = rememberCoroutineScope()
+    val logScrollState = rememberScrollState()
 
     fun chooseFile() {
         val chooser = JFileChooser()
@@ -82,30 +89,44 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
 
     fun runFlow() {
         if (jarPath.isBlank()) return
-        val http = PluginRegistry.httpEmulators.firstOrNull()
-        val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
-        val launcher = PluginRegistry.launcherPlugins.firstOrNull()
-        val db = PluginRegistry.databaseManagers.firstOrNull()
-        if (http == null || fileIo == null || launcher == null) return
+        logs.clear()
+        diff = null
+        scope.launch {
+            val http = PluginRegistry.httpEmulators.firstOrNull()
+            val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
+            val launcher = PluginRegistry.launcherPlugins.firstOrNull()
+            val db = PluginRegistry.databaseManagers.firstOrNull()
+            if (http == null || fileIo == null || launcher == null) return@launch
 
-        val executor = FlowExecutor(http, fileIo, launcher, db)
+            val executor = FlowExecutor(http, fileIo, launcher, db)
 
-        val loaded = if (flowPath.isNotBlank()) {
-            FlowIO.read(java.nio.file.Path.of(flowPath))
-        } else null
+            val loaded = if (flowPath.isNotBlank()) {
+                FlowIO.read(java.nio.file.Path.of(flowPath))
+            } else null
 
-        diff = try {
-            if (loaded != null) {
-                executor.playback(
-                    loaded,
-                    LaunchConfig(java.nio.file.Paths.get(jarPath))
-                )
-            } else {
-                launcher.launch(LaunchConfig(java.nio.file.Paths.get(jarPath))).waitFor()
+            diff = try {
+                if (loaded != null) {
+                    executor.playback(
+                        loaded,
+                        LaunchConfig(java.nio.file.Paths.get(jarPath)),
+                        logHandler = { line -> logs.add(line) },
+                    )
+                } else {
+                    val process = launcher.launch(LaunchConfig(java.nio.file.Paths.get(jarPath)))
+                    val out = launch(Dispatchers.IO) {
+                        process.inputStream.bufferedReader().forEachLine { logs.add(it) }
+                    }
+                    val err = launch(Dispatchers.IO) {
+                        process.errorStream.bufferedReader().forEachLine { logs.add(it) }
+                    }
+                    process.waitFor()
+                    out.join()
+                    err.join()
+                }
+                null
+            } catch (e: Exception) {
+                e.message?.lines()?.drop(1)
             }
-            null
-        } catch (e: Exception) {
-            e.message?.lines()?.drop(1)
         }
     }
 
@@ -170,6 +191,18 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
                 Spacer(Modifier.width(8.dp))
                 Button(onClick = { runFlow() }, enabled = jarPath.isNotBlank()) {
                     Text("Run")
+                }
+            }
+
+            if (logs.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
+                        .verticalScroll(logScrollState)
+                ) {
+                    logs.forEach { line -> Text(line) }
                 }
             }
 

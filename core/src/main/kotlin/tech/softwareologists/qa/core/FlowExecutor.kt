@@ -45,6 +45,7 @@ class FlowExecutor(
         config: LaunchConfig,
         variables: Map<String, String> = emptyMap(),
         stepAction: (FlowStep) -> Map<String, Any?> = { emptyMap() },
+        logHandler: ((String) -> Unit)? = null,
     ) {
         val resolvedFlow = flow.applyVariables(variables)
         val resolvedConfig = config.applyVariables(resolvedFlow.variables + variables)
@@ -61,7 +62,24 @@ class FlowExecutor(
         simulateFileEvents(resolvedFlow.emulator.file.events)
 
         val process = launcher.launch(updatedConfig)
+        val outThread = if (logHandler != null) {
+            Thread {
+                process.inputStream.bufferedReader().useLines { lines ->
+                    lines.forEach { logHandler(it) }
+                }
+            }.also { it.start() }
+        } else null
+        val errThread = if (logHandler != null) {
+            Thread {
+                process.errorStream.bufferedReader().useLines { lines ->
+                    lines.forEach { logHandler(it) }
+                }
+            }.also { it.start() }
+        } else null
+
         process.waitFor()
+        outThread?.join()
+        errThread?.join()
 
         fileIoEmulator.stop()
         httpEmulator.stop()
