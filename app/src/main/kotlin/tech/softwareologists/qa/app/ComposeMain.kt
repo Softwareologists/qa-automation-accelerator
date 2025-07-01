@@ -81,19 +81,28 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
     }
 
     fun runFlow() {
-        if (flowPath.isBlank()) return
-        val loaded = FlowIO.read(java.nio.file.Path.of(flowPath))
+        if (jarPath.isBlank()) return
         val http = PluginRegistry.httpEmulators.firstOrNull()
         val fileIo = PluginRegistry.fileIoEmulators.firstOrNull()
         val launcher = PluginRegistry.launcherPlugins.firstOrNull()
         val db = PluginRegistry.databaseManagers.firstOrNull()
         if (http == null || fileIo == null || launcher == null) return
+
         val executor = FlowExecutor(http, fileIo, launcher, db)
+
+        val loaded = if (flowPath.isNotBlank()) {
+            FlowIO.read(java.nio.file.Path.of(flowPath))
+        } else null
+
         diff = try {
-            executor.playback(
-                loaded,
-                LaunchConfig(java.nio.file.Paths.get("/usr/bin/true"))
-            )
+            if (loaded != null) {
+                executor.playback(
+                    loaded,
+                    LaunchConfig(java.nio.file.Paths.get(jarPath))
+                )
+            } else {
+                launcher.launch(LaunchConfig(java.nio.file.Paths.get(jarPath))).waitFor()
+            }
             null
         } catch (e: Exception) {
             e.message?.lines()?.drop(1)
@@ -159,7 +168,7 @@ fun MainScreen(recorder: FlowRecorder = PluginFlowRecorder()) {
                     Text("Stop")
                 }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = { runFlow() }, enabled = flow != null) {
+                Button(onClick = { runFlow() }, enabled = jarPath.isNotBlank()) {
                     Text("Run")
                 }
             }
