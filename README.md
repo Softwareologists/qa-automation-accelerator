@@ -1,6 +1,7 @@
 # QA Automation Accelerator
 
-
+[![CI](https://github.com/Softwareologists/qa-automation-accelerator/actions/workflows/ci.yml/badge.svg)](https://github.com/Softwareologists/qa-automation-accelerator/actions/workflows/ci.yml)
+[![Release](https://github.com/Softwareologists/qa-automation-accelerator/actions/workflows/release.yml/badge.svg)](https://github.com/Softwareologists/qa-automation-accelerator/actions/workflows/release.yml)
 
 **QA Automation Accelerator** is a Kotlin-based desktop and CLI tool that transforms manual QA workflows into automated, reproducible test flows. It captures HTTP interactions and file I/O events against your Spring Boot or .NET application JAR/DDl/EXE, then replays them to validate future builds.
 
