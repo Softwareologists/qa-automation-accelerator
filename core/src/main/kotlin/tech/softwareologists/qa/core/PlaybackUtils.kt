@@ -20,7 +20,9 @@ fun simulateFileEvents(events: List<FileEvent>) {
         when (event.type) {
             FileEventType.CREATE -> {
                 Files.createDirectories(event.path.parent)
-                Files.createFile(event.path)
+                if (Files.notExists(event.path)) {
+                    Files.createFile(event.path)
+                }
             }
 
             FileEventType.DELETE -> Files.deleteIfExists(event.path)

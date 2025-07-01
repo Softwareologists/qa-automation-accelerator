@@ -5,6 +5,9 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":plugins:http-emulator"))
+    implementation(project(":plugins:fileio-emulator"))
+    implementation(project(":plugins:jar-launcher"))
     implementation(libs.clikt)
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
