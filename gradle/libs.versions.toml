@@ -2,7 +2,7 @@
 kotlin = "2.2.0"
 ktor = "3.2.0"
 h2 = "2.3.232"
-mssql = "12.10.0.jre11"
+mssql = "13.1.0.jre11-preview"
 clikt = "4.2.2"
 ktlint-gradle = "12.2.0"
 detekt = "1.23.8"
